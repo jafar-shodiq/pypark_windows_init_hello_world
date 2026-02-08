@@ -21,9 +21,7 @@ jobs:
       - name: Set up Python 3.11
         run: uv python install 3.11
 
-      - name: Install dependencies
-        run: uv pip install --system pytest pyspark
-
+      # uv will automatically create a temporary environment 
+      # and install these based on your pyproject.toml or the arguments
       - name: Run Tests
-        # We set an env var so Spark knows it's running in a headless CI environment
-        run: pytest tests/
+        run: uv run --with pytest --with pyspark pytest tests/

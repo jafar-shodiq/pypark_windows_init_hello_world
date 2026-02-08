@@ -22,9 +22,8 @@ jobs:
         run: uv python install 3.11
 
       - name: Install dependencies
-        run: uv pip install pytest pyspark
+        run: uv pip install --system pytest pyspark
 
       - name: Run Tests
         # We set an env var so Spark knows it's running in a headless CI environment
-        run: |
-          uv run pytest tests/
+        run: pytest tests/

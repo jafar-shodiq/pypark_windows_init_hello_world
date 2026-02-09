@@ -19,9 +19,10 @@ To run this project on Windows, you must have the following installed:
 
 ### 1. Hadoop Winutils Setup
 Spark requires `winutils.exe` to simulate Linux-style file permissions on Windows.
+(download from https://github.com/cdarlint/winutils/tree/master/hadoop-3.3.5/bin)
 
 1.  Create a folder: `C:\hadoop\bin`.
-2.  Place `winutils.exe` inside that `bin` folder.
+2.  Place `winutils.exe` and `hadoop.dll` inside that `bin` folder.
 3.  Open **Environment Variables** in Windows and add:
     * **Variable Name**: `HADOOP_HOME`
     * **Variable Value**: `C:\hadoop`
@@ -42,7 +43,7 @@ Use `uv` to create a virtual environment specifically using Python 3.11:
 uv venv --python 3.11
 
 # Install dependencies
-uv pip install pyspark
+uv add pyspark==3.5.0
 
 # Run
 uv run python -m src.main

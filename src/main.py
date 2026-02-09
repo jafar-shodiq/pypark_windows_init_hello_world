@@ -1,55 +1,60 @@
-import os
 import sys
-from pyspark.sql import SparkSession
+import time
 from pyspark.sql import functions as F
 
-def create_spark_session():
-    """Initializes the Spark Session with Windows-specific fixes."""
-    os.environ["PYSPARK_PYTHON"] = sys.executable
-    os.environ["PYSPARK_DRIVER_PYTHON"] = sys.executable
-
-    return SparkSession.builder \
-        .appName("BRI_Data_Exploration") \
-        .master("local[*]") \
-        .config("spark.driver.host", "127.0.0.1") \
-        .config("spark.sql.shuffle.partitions", "4") \
-        .getOrCreate()
+from src.utils import create_spark_session
 
 def main():
-    spark = create_spark_session()
+    """Main function to demonstrate Spark session and aggregation."""
+    spark = create_spark_session(app_name="SparkTestSession", shuffle_partitions=4)
     
     spark.sparkContext.setLogLevel("ERROR")
+    spark.sparkContext.setLogLevel("OFF")
 
     try:
-        print("\n--- Starting BRI Data Exploration ---")
-
         data = [
-            ("C001", "Tabungan Utama", 15000000.0, "Jakarta"),
-            ("C002", "Simpedes", 500000.0, "Surabaya"),
-            ("C003", "BritAma", 2500000.0, "Jakarta"),
-            ("C004", "Simpedes", 7500000.0, "Bandung"),
+            (1, "Alice", 10000),
+            (2, "Bob", 3100), 
+            (3, "David", 2500),
+            (4, "David", 3500),
+            (5, "Eve", 2800),
+            (6, "Alice", 3300),
+            (7, "Grace", 2700),
+            (8, "Bob", 2900),
+            (9, "Eve", 4100),
+            (10, "Frank", 2300),
+            (11, "Grace", 3600),
+            (12, "Heidi", 3900),
+            (13, "Alice", 5800)
         ]
-        columns = ["customer_id", "product_type", "balance", "branch_city"]
-        
+        columns = ["id", "name", "trx_amount"]
+
         df = spark.createDataFrame(data, columns)
+        
+        print("Started creating dataframe")
+        df.show()
+        print("Finished creating dataframe")
 
-        print("\nSummary by Product Type:")
-        summary_df = df.groupBy("product_type").agg(
-            F.count("customer_id").alias("total_customers"),
-            F.sum("balance").alias("total_balance"),
-            F.avg("balance").alias("avg_balance")
+        print("Started performing aggregation")
+        agg_df_1 = df.groupBy("name").agg(
+            F.count("trx_amount").alias("transaction_count"),
+            F.sum("trx_amount").alias("total_amount"),
+            F.avg("trx_amount").alias("average_amount")
         )
+        agg_df_1.show()
+        print("Finished performing aggregation")
 
-        summary_df.show()
-
-        print("DataFrame Schema:")
-        df.printSchema()
-
+        print("Started exporting results to CSV")
+        agg_df_1.coalesce(1).write.mode("overwrite").option("header", "true").csv("data/agg_results")
+        print("Finished exporting results to CSV")
+    
     except Exception as e:
-        print(f"Error during execution: {e}")
+        print(f"An error occurred: {e}")
+
     finally:
-        print("Shutting down Spark Session...")
         spark.stop()
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()
+    sys.exit(0)

@@ -1,0 +1,8 @@
+name,transaction_count,total_amount,average_amount
+Alice,3,19100,6366.666666666667
+Bob,2,6000,3000.0
+David,2,6000,3000.0
+Eve,2,6900,3450.0
+Grace,2,6300,3150.0
+Frank,1,2300,2300.0
+Heidi,1,3900,3900.0
